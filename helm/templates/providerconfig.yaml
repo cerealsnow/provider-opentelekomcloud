@@ -1,0 +1,21 @@
+apiVersion: opentelekomcloud.crossplane.io/v1beta1
+kind: ProviderConfig
+metadata:
+  name: {{ include "otc.providerconfigName" . }}
+  annotations:
+    {{- if .Values.argocd.syncWaveIntegration.enabled }}
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+    argocd.argoproj.io/sync-wave: "2"
+    {{- end }}
+spec:
+  {{- with and .Values.otc.providerConfig .Values.otc.providerConfig.credentials }}
+  credentials:
+    source: Secret
+    secretRef:
+      name: {{ .secretName | default "provider-opentelekomcloud-creds" }}
+      namespace: {{ .secretNamespace | default "crossplane-system" }}
+      key: {{ .secretKey | default "credentials" }}
+  {{- else }}
+  credentials:
+    source: None
+  {{- end }}

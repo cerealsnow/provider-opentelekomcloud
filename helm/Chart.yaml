@@ -1,0 +1,22 @@
+apiVersion: v2
+appVersion: v1.0.0
+description: A Helm chart for deploying Crossplane and the OpenTelekomCloud-Provider with ArgoCD sync-wave support. 
+name:  otc-crossplane
+version: 1.0.0 
+# sources:
+  # - 
+keywords:
+  - crossplane 
+  - opentelekomcloud 
+  - otc 
+# maintainers:
+  # - name: 
+    # url: 
+dependencies:
+  - name: crossplane 
+    version: 2.0.2 
+    repository: https://charts.crossplane.io/stable
+# annotations:
+   # artifacthub.io/changes: |
+   #  - kind: changed
+   #    description: Update Crossplane to v1.0.0

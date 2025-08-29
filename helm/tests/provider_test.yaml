@@ -1,0 +1,51 @@
+suite: test provider
+templates:
+  - provider.yaml
+tests:
+  - it: should use default provider name
+    asserts:
+      - equal:
+          path: metadata.name
+          value: "provider-opentelekomcloud"
+  - it: should use user-defined provider name when set
+    set:
+      otc.provider.name: "provider-spaghetti-code"
+    asserts:
+      - equal:
+          path: metadata.name
+          value: "provider-spaghetti-code"
+  - it: should use correct provider package
+    set:
+      otc.provider.package: "xpkg.upbound.io/opentelekomcloud/provider-opentelekomcloud:v0.0.0"
+    asserts:
+      - equal:
+          path: spec.package
+          value: "xpkg.upbound.io/opentelekomcloud/provider-opentelekomcloud:v0.0.0"
+  - it: should set ArgoCD annotations by default
+    asserts:
+      - exists:
+          path: metadata.annotations["argocd.argoproj.io/sync-options"]
+      - exists:
+          path: metadata.annotations["argocd.argoproj.io/sync-wave"]
+  - it: should not set ArgoCD annotations when disabled
+    set:
+      argocd.syncWaveIntegration.enabled: false
+    asserts:
+      - notExists:
+          path: metadata.annotations["argocd.argoproj.io/sync-options"]
+      - notExists:
+          path: metadata.annotations["argocd.argoproj.io/sync-wave"]
+  - it: should use ArgoCD sync-options
+    set:
+      argocd.syncWaveIntegration.enabled: true
+    asserts:
+      - equal:
+          path: metadata.annotations["argocd.argoproj.io/sync-wave"]
+          value: "1"
+  - it: should use ArgoCD sync-waves
+    set:
+      argocd.syncWaveIntegration.enabled: true
+    asserts:
+      - equal:
+          path: metadata.annotations["argocd.argoproj.io/sync-options"]
+          value: "SkipDryRunOnMissingResource=true"

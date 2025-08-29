@@ -1,0 +1,81 @@
+suite: test providerconfig
+templates:
+  - providerconfig.yaml
+tests:
+  - it: should use default providerconfig name
+    asserts:
+      - equal:
+          path: metadata.name
+          value: "providerconfig-opentelekomcloud"
+  - it: should use user-defined providerconfig name when set
+    set:
+      otc.providerConfig.name: "providerconfig-spaghetti-code"
+    asserts:
+      - equal:
+          path: metadata.name
+          value: "providerconfig-spaghetti-code"
+  - it: should set ArgoCD annotations by default
+    asserts:
+      - exists:
+          path: metadata.annotations["argocd.argoproj.io/sync-options"]
+      - exists:
+          path: metadata.annotations["argocd.argoproj.io/sync-wave"]
+  - it: should not set ArgoCD annotations when disabled
+    set:
+      argocd.syncWaveIntegration.enabled: false
+    asserts:
+      - notExists:
+          path: metadata.annotations["argocd.argoproj.io/sync-options"]
+      - notExists:
+          path: metadata.annotations["argocd.argoproj.io/sync-wave"]
+  - it: should use ArgoCD sync-options
+    set:
+      argocd.syncWaveIntegration.enabled: true
+    asserts:
+      - equal:
+          path: metadata.annotations["argocd.argoproj.io/sync-wave"]
+          value: "2"
+  - it: should use ArgoCD sync-waves
+    set:
+      argocd.syncWaveIntegration.enabled: true
+    asserts:
+      - equal:
+          path: metadata.annotations["argocd.argoproj.io/sync-options"]
+          value: "SkipDryRunOnMissingResource=true"
+  - it: should use credentials source 'Secret' when credentials are set
+    set:
+      otc:
+        providerConfig:
+          credentials:
+            secretName: "provider-opentelekomcloud-creds"
+            secretNamespace: "crossplane-system"
+            secretKey: "credentials"
+    asserts:
+      - equal:
+          path: spec.credentials.source
+          value: "Secret"
+  - it: should use credentials source 'None' when credentials are not set
+    set:
+      otc.providerConfig.credentials: {}
+    asserts:
+      - equal:
+          path: spec.credentials.source
+          value: "None"
+  - it: should use credentials secretRef when credentials are set
+    set:
+      otc.providerConfig.credentials.secretName: "provider-opentelekomcloud-creds"
+      otc.providerConfig.credentials.secretNamespace: "crossplane-system"
+      otc.providerConfig.credentials.secretKey: "credentials"
+    asserts:
+      - equal:
+          path: spec.credentials.source
+          value: "Secret"
+      - equal:
+          path: spec.credentials.secretRef.name
+          value: "provider-opentelekomcloud-creds"
+      - equal:
+          path: spec.credentials.secretRef.namespace
+          value: "crossplane-system"
+      - equal:
+          path: spec.credentials.secretRef.key
+          value: "credentials"

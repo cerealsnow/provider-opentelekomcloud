@@ -1,0 +1,14 @@
+otc:
+  provider:
+    # name: "provider-opentelekomcloud"
+    package: "xpkg.upbound.io/opentelekomcloud/provider-opentelekomcloud:v0.3.0"
+  providerConfig:
+    # name: "providerconfig-opentelekomcloud"
+    credentials:
+      # secretName: "provider-opentelekomcloud-creds"
+      # secretNamespace: "crossplane-system"
+      # secretKey: "credentials"
+
+argocd:
+  syncWaveIntegration:
+    enabled: true
